@@ -1,8 +1,10 @@
-# travel-assistant
+# Travel Assistant
 
-This monorepo contains all components of our chatbot
+**Travel Assistant** is a student project at DHBW Stuttgart. This repository contains the neccessary source-code for a proof of concept.
 
 ## Structure
+
+The repository is structured as a monorepo and contains all relevant services.
 
 - **services**
   - **frontend**
