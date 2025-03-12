@@ -50,7 +50,7 @@ All changes to **main** must be requested and documented through a PR and approv
 
 For easy use, please add a Dockerfile to your service and add it to the `docker-compose.yml`.
 
-Example:
+#### Example:
 ```yaml
   frontend:
     build:
@@ -61,4 +61,11 @@ Example:
     environment:
       - XYZ=abc
     restart: unless-stopped
+```
+
+#### Usage
+
+**Run**
+```bash
+docker-compose -f docker-compose.yml up
 ```
