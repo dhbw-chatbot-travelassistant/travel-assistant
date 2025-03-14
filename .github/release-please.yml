@@ -1,5 +1,5 @@
 primaryBranch: main
 handleGHRelease: true
 manifest: true
-manifestConfig: .release-please-config.json
+manifestConfig: release-please-config.json
 manifestFile: .release-please-manifest.json
