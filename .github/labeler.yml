@@ -29,6 +29,12 @@ build:
 perf:
   - head-branch: ['^perf', 'perf', '^optimize', 'optimize', '^enhance', 'enhance']
 
+workflow:
+- any:
+  - changed-files:
+    -  any-glob-to-any-file: ['**/.github/**/*']
+  - head-branch: ['^github', 'github', '^workflow', 'workflow']
+
 'service: frontend':
   - changed-files:
      - any-glob-to-any-file: ['services/frontend/*','services/frontend/**/*']
