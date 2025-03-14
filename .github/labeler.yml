@@ -1,0 +1,51 @@
+'to:main':
+  - base-branch: ['^main', 'main']
+
+'service:frontend':
+  - changed-files:
+     - any-glob-to-any-file: ['services/frontend/*','services/frontend/**/*']
+
+'service:backend':
+  - changed-files:
+     - any-glob-to-any-file: ['services/backend/*','services/backend/**/*']
+
+'service:data':
+  - changed-files:
+     - any-glob-to-any-file: ['services/data/*','services/data/**/*']
+
+docs:
+- changed-files:
+    - any-glob-to-any-file: ['docs/*','**/*.md']
+
+feature:
+ - head-branch: ['^feature', 'feature','^feat', 'feat']
+
+fix:
+ - head-branch: ['^fix', 'fix', '^bug', 'bug']
+
+ci:
+ - head-branch: ['^ci', 'ci']
+
+chore:
+ - head-branch: ['^chore', 'chore']
+
+style:
+  - head-branch: ['^style', 'style', '^format', 'format']
+
+refactor:
+  - head-branch: ['^refactor', 'refactor']
+
+test:
+  - head-branch: ['^test', 'test']
+
+build:
+  - head-branch: ['^build', 'build']
+
+perf:
+  - head-branch: ['^perf', 'perf', '^optimize', 'optimize', '^enhance', 'enhance']
+
+workflow:
+- any:
+  - changed-files:
+    -  any-glob-to-any-file: ['**/.github/**/*']
+  - head-branch: ['^github', 'github', '^workflow', 'workflow']

@@ -28,3 +28,4 @@ create_venv:
 install_precommit:
 	@printf "${YELLOW}Installing pre-commit...${NC}\n"
 	@.venv/bin/pip install pre-commit >/dev/null 2>&1 && printf "${GREEN}✓ pre-commit installed${NC}\n" || { printf "${RED}✗ Failed to install pre-commit${NC}\n"; exit 1; }
+	@.venv/bin/pre-commit install >/dev/null 2>&1 && printf "${GREEN}✓ pre-commit hooks installed${NC}\n" || { printf "${RED}✗ Failed to install pre-commit hooks${NC}\n"; exit 1; }
