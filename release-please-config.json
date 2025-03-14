@@ -1,0 +1,18 @@
+{
+  "always-update": true,
+  "packages": {
+    "services/backend": {
+      "changelog-path": "services/backend/docs/CHANGELOG.md",
+      "package-name": "backend-service"
+    },
+    "services/data": {
+      "changelog-path": "services/data/docs/CHANGELOG.md",
+      "package-name": "data-service"
+    },
+    "services/frontend": {
+      "changelog-path": "services/frontend/docs/CHANGELOG.md",
+      "package-name": "frontend-service"
+    }
+  },
+  "separate-pull-requests": false
+}
