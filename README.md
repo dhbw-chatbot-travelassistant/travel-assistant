@@ -18,6 +18,14 @@ The repository is structured as a monorepo and contains all relevant services.
 
 Contact [**Johannes**](https://github.com/Jopeeee) for any issues and concerns with the dev environment. The given specifications should help us to create a well-structured and organized project.
 
+#### Set-Up
+
+To work in the repository execute the following command:
+
+```bash
+make init
+```
+
 #### Conventional Commits
 
 This repositories follows [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary).
