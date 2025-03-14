@@ -1,3 +1,18 @@
+'to: main':
+  - base-branch: ['^main', 'main']
+
+'service: frontend':
+  - changed-files:
+     - any-glob-to-any-file: ['services/frontend/*','services/frontend/**/*']
+
+'service: backend':
+  - changed-files:
+     - any-glob-to-any-file: ['services/backend/*','services/backend/**/*']
+
+'service: data':
+  - changed-files:
+     - any-glob-to-any-file: ['services/data/*','services/data/**/*']
+
 docs:
 - changed-files:
     - any-glob-to-any-file: ['docs/*','**/*.md']
@@ -34,15 +49,3 @@ workflow:
   - changed-files:
     -  any-glob-to-any-file: ['**/.github/**/*']
   - head-branch: ['^github', 'github', '^workflow', 'workflow']
-
-'service: frontend':
-  - changed-files:
-     - any-glob-to-any-file: ['services/frontend/*','services/frontend/**/*']
-
-'service: backend':
-  - changed-files:
-     - any-glob-to-any-file: ['services/backend/*','services/backend/**/*']
-
-'service: data':
-  - changed-files:
-     - any-glob-to-any-file: ['services/data/*','services/data/**/*']
