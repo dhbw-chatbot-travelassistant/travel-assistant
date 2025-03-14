@@ -16,7 +16,9 @@ The repository is structured as a monorepo and contains all relevant services.
 
 ## Developer Usage
 
-### Conventional Commits
+Contact [**Johannes**](https://github.com/Jopeeee) for any issues and concerns with the dev environment. The given specifications should help us to create a well-structured and organized project.
+
+#### Conventional Commits
 
 This repositories follows [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary).
 
@@ -40,17 +42,31 @@ The commit contains the following structural elements, to communicate intent to 
 
 Source: [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary).
 
-### Merge/Pull Requests
+#### Branching
+
+Based on [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/#summary), the branches should resemble the main purpose in their name. Use the following structure for your branches:
+
+```
+<type>/<scope>
+
+i.e. fix/error-on-login, docs/frontend-readme
+```
+
+The corresponding pull requests will be labeled accordingly.
+
+
+
+#### Merge/Pull Requests
 
 As multiple developers use this repository at the same time, the **main** branch should remain executable.
 
 All changes to **main** must be requested and documented through a PR and approved by one other team member.
 
-### Docker
+#### Docker
 
 For easy use, please add a Dockerfile to your service and add it to the `docker-compose.yml`.
 
-#### Example:
+*Example:*
 ```yaml
   frontend:
     build:
@@ -65,7 +81,7 @@ For easy use, please add a Dockerfile to your service and add it to the `docker-
 
 #### Usage
 
-**Run**
+*Run:*
 ```bash
 docker-compose -f docker-compose.yml up
 ```
