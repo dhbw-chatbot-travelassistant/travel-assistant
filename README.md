@@ -25,7 +25,7 @@ This repositories follows [Conventional Commits](https://www.conventionalcommits
 The commit message should be structured as follows:
 
 ```
-<type>[optional scope]: <description>
+<type>([optional scope]): <description>
 
 [optional body]
 
