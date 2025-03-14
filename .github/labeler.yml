@@ -1,15 +1,15 @@
-'to: main':
+'to:main':
   - base-branch: ['^main', 'main']
 
-'service: frontend':
+'service:frontend':
   - changed-files:
      - any-glob-to-any-file: ['services/frontend/*','services/frontend/**/*']
 
-'service: backend':
+'service:backend':
   - changed-files:
      - any-glob-to-any-file: ['services/backend/*','services/backend/**/*']
 
-'service: data':
+'service:data':
   - changed-files:
      - any-glob-to-any-file: ['services/data/*','services/data/**/*']
 
