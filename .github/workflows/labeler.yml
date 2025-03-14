@@ -1,4 +1,4 @@
-name: "Pull Request Labeler"
+name: "PR Label"
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - opened
       - edited
 jobs:
-  labeler:
+  label:
     permissions:
       contents: read
       pull-requests: write
