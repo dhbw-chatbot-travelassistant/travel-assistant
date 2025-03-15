@@ -106,7 +106,7 @@ class Hotel:
             "hotel_rating": self.hotel_rating,
             "address": self.address,
             "attractions": [attraction.to_dict() for attraction in self.attractions],
-            "preferred_airport": self.preferred_airport.to_dict() if self.preferred_airport else None,
+            "preferred_airport": self.preferred_airport.to_dict() if self.preferred_airport else "Unknown",
             "description": self.description,
             "fax_number": self.fax_number,
             "hotel_facilities": self.hotel_facilities,

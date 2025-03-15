@@ -37,13 +37,13 @@ if __name__ == '__main__':
     DATASET_PATH = "datasets/hotels.csv"  # Replace with your target directory
 
     # Pinecone
-    PINECONE_API_KEY = "<YOUR_PINECONE_API_KEY>"
+    PINECONE_API_KEY = "<YOUR_API_KEY>"  # Replace with your Pinecone API key
     PINECONE_INDEX_NAME = "hotels"
     PINECONE_NAMESPACE = "hotels"
 
     # Data processing
-    CHUNKSIZE = 1  # Specify the number of rows to read, embed and store at a time
-    NROWS = 1  # Specify the number of rows to process, or 'None' to process all rows
+    CHUNKSIZE = 1000  # Specify the number of rows to read, embed and store at a time
+    NROWS = 10000000  # Specify the number of rows to process, or 'None' to process all rows
     ########################################################################################
 
     if not os.path.exists(DATASET_PATH):

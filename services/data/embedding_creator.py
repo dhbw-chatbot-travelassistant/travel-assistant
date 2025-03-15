@@ -60,7 +60,11 @@ class HotelPineconeEmbeddingCreator(EmbeddingCreator):
         )
 
         # create key-value pairs for embeddings
-        embeddings = {hotel.id: embedding for hotel,
-                      embedding in zip(data, embeddings)}
+        embeddings_dict = {}
+        for hotel, embedding in zip(data, embeddings):
+            embeddings_dict[hotel.id] = {
+                "values": embedding["values"],
+                "metadata": hotel.to_dict()
+            }
 
-        return embeddings
+        return embeddings_dict
