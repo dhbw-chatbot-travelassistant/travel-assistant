@@ -46,7 +46,7 @@ class PineconeEmbeddingStorage(EmbeddingStorage):
         vectors = []
         for key, embedding in embeddings.items():
             vectors.append({
-                "id": key,
+                "id": str(key),
                 "values": embedding['values']
             })
 
