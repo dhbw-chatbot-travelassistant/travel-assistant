@@ -16,8 +16,6 @@ class TestHotelDataCollector(unittest.TestCase):
                 self.assertTrue(hotel.hotel_rating)
                 self.assertTrue(hotel.address)
                 self.assertTrue(hotel.attractions)
-                # self.assertIsNotNone(hotel.attractions)
-                # preferred_airport is allowed to be None
                 self.assertTrue(hotel.description)
                 self.assertTrue(hotel.fax_number)
                 self.assertTrue(hotel.hotel_facilities)
