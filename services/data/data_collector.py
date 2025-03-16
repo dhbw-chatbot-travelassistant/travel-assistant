@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from pandas import read_csv
-from model import Hotel, Attraction, Airport
+from model import Hotel
 import re
 from typing import List
 from typing import Generator
+import math
 
 
 class DataCollector(ABC):
@@ -71,6 +72,8 @@ class HotelDataCollector(DataCollector):
     Collects hotel data.
     """
 
+    UNKNOWN_VALUE = "Unknown"
+
     def __init__(self, file_path: str, chunksize: int = 1000, nrows: int = None):
         super().__init__(file_path, chunksize, nrows)
         self.csv_data_collector = CSVDataCollector(
@@ -84,78 +87,107 @@ class HotelDataCollector(DataCollector):
             for _, row in data["data"].items():
                 hotel = Hotel(id)
                 id += 1
-                hotel.country_code = row["countyCode"]
-                hotel.country_name = row["countyName"]
-                hotel.city_code = row["cityCode"]
-                hotel.city_name = row["cityName"]
-                hotel.hotel_code = row["HotelCode"]
-                hotel.hotel_name = row["HotelName"]
-                hotel.hotel_rating = row["HotelRating"]
-                hotel.address = row["Address"]
+                hotel.country_code = self.extract_str(row["countyCode"])
+                hotel.country_name = self.extract_str(row["countyName"])
+                hotel.city_code = self.extract_str(row["cityCode"])
+                hotel.city_name = self.extract_str(row["cityName"])
+                hotel.hotel_code = self.extract_str(row["HotelCode"])
+                hotel.hotel_name = self.extract_str(row["HotelName"])
+                hotel.hotel_rating = self.extract_str(row["HotelRating"])
+                hotel.address = self.extract_str(row["Address"])
 
-                # extract attractions and preferred airport
-                attractions = HotelDataCollector.extract_attractions(
-                    row["Attractions"])
+                hotel.attractions = self.extract_str(row["Attractions"])
+                # attractions = self.extract_attractions(row["Attractions"])
+                # hotel.attractions = attractions["attractions"]
+                # hotel.preferred_airport = attractions["preferred_airport"]
 
-                hotel.attractions = [
-                    attraction for attraction in attractions["attractions"]]
-                hotel.preferred_airport = attractions["preferred_airport"]
+                hotel.description = self.extract_str(row["Description"])
+                hotel.fax_number = self.extract_str(row["FaxNumber"])
+                hotel.hotel_facilities = self.extract_str(
+                    row["HotelFacilities"])
+                hotel.map_coordinates = self.extract_str(row["Map"])
+                hotel.phone_number = self.extract_str(row["PhoneNumber"])
+                hotel.pin_code = self.extract_str(row["PinCode"])
+                hotel.hotel_website_url = self.extract_str(
+                    row["HotelWebsiteUrl"])
 
-                hotel.description = row["Description"]
-                hotel.fax_number = row["FaxNumber"]
-                hotel.hotel_facilities = row["HotelFacilities"]
-                hotel.map_coordinates = row["Map"]
-                hotel.phone_number = row["PhoneNumber"]
-                hotel.pin_code = row["PinCode"]
-                hotel.hotel_website_url = row["HotelWebsiteUrl"]
                 hotels.append(hotel)
 
             yield i, hotels
 
-    def extract_attractions(text):
+    def extract_str(self, value):
+        if value is None:
+            return self.UNKNOWN_VALUE
+        if isinstance(value, float) and math.isnan(value):
+            return self.UNKNOWN_VALUE
+        return str(value)
+
+    """
+
+    def extract_attractions(self, text):
 
         # convert to string if it is not a string
-        text = str(text)
+        if isinstance(text, str):
+            # Entferne die erste Zeile bis zum ersten <br />
+            text = re.sub(r'^Distances are(.*?)<br />',
+                          '', text, count=1).strip()
 
-        # Entferne die erste Zeile bis zum ersten <br />
-        text = re.sub(r'^.*?<br />', '', text, count=1).strip()
+            # Entferne alle Vorkommen von <p> und </p>
+            text = text.replace('</p>', '').replace('<p>', '')
 
-        # Entferne alle Vorkommen von <p> und </p>
-        text = text.replace('</p>', '').replace('<p>', '')
+            # Splitte den Text basierend auf <br /> als Delimiter
+            parts = []
+            if ('<br />' not in text):
+                parts.append(text)
+            else:
+                while '<br />' in text:
+                    line = re.search(r'^(.*?)<br />', text).group(1)
+                    parts.append(line)
+                    text = text[len(line) + 6:]
 
-        # Splitte den Text basierend auf <br /> als Delimiter
-        parts = text.split('<br />')
+            attractions = []
+            preferred_airport = None
 
-        attractions = []
-        preferred_airport = None
+            attraction_pattern = re.compile(
+                r"(.*?) - (\d+\.\d+) km / (\d+\.\d+) mi")
+            preferred_airport_pattern = re.compile(
+                r".*? airport.*is (.*?) - (\d+\.\d+) km / (\d+\.\d+) mi")
 
-        attraction_pattern = re.compile(
-            r"(.*?) - (\d+\.\d+) km / (\d+\.\d+) mi")
-        preferred_airport_pattern = re.compile(
-            r".*? airport.*is (.*?) - (\d+\.\d+) km / (\d+\.\d+) mi")
+            # create regular expression that splits lines by <br />
 
-        for part in parts:
-            part = part.strip()
-            airport_match = preferred_airport_pattern.search(part)
+            for part in parts:
+                part = part.strip()
+                airport_match = preferred_airport_pattern.search(part)
 
-            if airport_match:
-                airport_name, km_distance, mi_distance = airport_match.groups()
-                preferred_airport = Airport()
-                preferred_airport.airport_name = airport_name.strip()
-                preferred_airport.distance_km = float(km_distance)
-                preferred_airport.distance_mi = float(mi_distance)
-                continue
+                if airport_match:
+                    airport_name, km_distance, mi_distance = airport_match.groups()
+                    preferred_airport = Airport()
+                    preferred_airport.airport_name = airport_name.strip()
+                    preferred_airport.distance_km = float(km_distance)
+                    preferred_airport.distance_mi = float(mi_distance)
+                    continue
 
-            match = attraction_pattern.match(part)
-            if match:
-                attraction_name, km_distance, mi_distance = match.groups()
-                new_attraction = Attraction()
-                new_attraction.attraction_name = attraction_name.strip()
-                new_attraction.distance_km = float(km_distance)
-                new_attraction.distance_mi = float(mi_distance)
-                attractions.append(new_attraction)
+                match = attraction_pattern.match(part)
+                if match:
+                    attraction_name, km_distance, mi_distance = match.groups()
+                    new_attraction = Attraction()
+                    new_attraction.attraction_name = attraction_name.strip()
+                    if (not new_attraction.attraction_name):
+                        continue
+                    new_attraction.distance_km = float(km_distance)
+                    new_attraction.distance_mi = float(mi_distance)
+                    attractions.append(new_attraction)
 
+            if len(attractions) == 0:
+                if text:
+                    attractions = text
+                else:
+                    attractions = self.UNKNOWN_VALUE
+        else:
+            attractions = self.UNKNOWN_VALUE
+            preferred_airport = self.UNKNOWN_VALUE
         return {
             "attractions": attractions,
-            "preferred_airport": preferred_airport
+            "preferred_airport": preferred_airport if preferred_airport else self.UNKNOWN_VALUE
         }
+"""

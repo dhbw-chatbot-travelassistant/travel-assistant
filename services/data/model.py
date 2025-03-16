@@ -1,6 +1,4 @@
-from typing import List
-
-
+"""
 class Attraction:
     attraction_name: str
     distance_km: float
@@ -47,6 +45,7 @@ class Airport:
             "distance_km": self.distance_km,
             "distance_mi": self.distance_mi
         }
+"""
 
 
 class Hotel:
@@ -55,15 +54,16 @@ class Hotel:
     country_name: str
     city_code: str
     city_name: str
-    hotel_code: int
+    hotel_code: str
     hotel_name: str
     hotel_rating: str
     address: str
-    attractions: List[Attraction]
-    preferred_airport: Airport
+    attractions: str
+    # attractions: List[Attraction]
+    # preferred_airport: Airport
     description: str
     fax_number: str
-    hotel_facilities: List[str]
+    hotel_facilities: str
     map_coordinates: str
     phone_number: str
     pin_code: str
@@ -75,15 +75,16 @@ class Hotel:
         self.country_name = ""
         self.city_code = ""
         self.city_name = ""
-        self.hotel_code = 0
+        self.hotel_code = ""
         self.hotel_name = ""
         self.hotel_rating = ""
         self.address = ""
-        self.attractions = List[Attraction]
-        self.preferred_airport = Airport()
+        self.attractions = ""
+        # self.attractions = List[Attraction]
+        # self.preferred_airport = Airport()
         self.description = ""
         self.fax_number = ""
-        self.hotel_facilities = List[str]
+        self.hotel_facilities = ""
         self.map_coordinates = ""
         self.phone_number = ""
         self.pin_code = ""
@@ -105,8 +106,9 @@ class Hotel:
             "hotel_name": self.hotel_name,
             "hotel_rating": self.hotel_rating,
             "address": self.address,
-            "attractions": [attraction.to_dict() for attraction in self.attractions],
-            "preferred_airport": self.preferred_airport.to_dict() if self.preferred_airport else "Unknown",
+            "attractions": self.attractions,
+            # "attractions": str([attraction.to_dict() for attraction in self.attractions]) if isinstance(self.attractions, list) else self.attractions,
+            # "preferred_airport": str(self.preferred_airport.to_dict()) if isinstance(self.preferred_airport, Airport) else self.preferred_airport,
             "description": self.description,
             "fax_number": self.fax_number,
             "hotel_facilities": self.hotel_facilities,
