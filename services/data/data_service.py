@@ -47,9 +47,9 @@ if __name__ == '__main__':
 
     # Data processing
     CHUNKSIZE = 96  # Specify the number of rows to read, embed and store at a time
-    NROWS = 1  # Specify the number of rows to process, or 'None' to process all rows
+    NROWS = None  # Specify the number of rows to process, or 'None' to process all rows
     # Specify the number of rows to skip initially (excluding the header row)
-    SKIPROWS = 1056
+    SKIPROWS = 0
     # Specify the number of hours to wait before running the data service again
     SCHEDULE_HOURS = 1
     ########################################################################################
