@@ -47,9 +47,9 @@ if __name__ == '__main__':
 
     # Data processing
     CHUNKSIZE = 96  # Specify the number of rows to read, embed and store at a time
-    NROWS = None  # Specify the number of rows to process, or 'None' to process all rows
+    NROWS = 1  # Specify the number of rows to process, or 'None' to process all rows
     # Specify the number of rows to skip initially (excluding the header row)
-    SKIPROWS = 0
+    SKIPROWS = 1056
     # Specify the number of hours to wait before running the data service again
     SCHEDULE_HOURS = 1
     ########################################################################################
@@ -66,6 +66,7 @@ if __name__ == '__main__':
     embedding_storage = PineconeEmbeddingStorage(
         PINECONE_INDEX_NAME, PINECONE_NAMESPACE, PINECONE_API_KEY)
 
+    # Skip specified rows (preserve the header row)
     skiprows = SKIPROWS
     reschedule = True
     while (reschedule):
@@ -85,5 +86,4 @@ if __name__ == '__main__':
                 f"Schedule data service to run again in {SCHEDULE_HOURS} hours...")
             time.sleep(SCHEDULE_HOURS * 3600)
             # Skip the already processed rows (preserve the header row)
-            skiprows = range(2, 2 + SKIPROWS +
-                             data_service.chunks_completed * CHUNKSIZE)
+            skiprows = SKIPROWS + data_service.chunks_completed * CHUNKSIZE
