@@ -1,60 +1,161 @@
 from google import genai
 import os
+from pinecone import Pinecone
 from dotenv import load_dotenv
+import pandas as pd
+
+# Load environment variables from .env file
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
-api_key = os.getenv("GEMENI_API_KEY")
-client = genai.Client(api_key="YOUR_API_KEY")
+# Retrieve API keys from environment
+GEMENI_API_KEY = os.getenv("GEMENI_API_KEY")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+
+# Initialize the Gemeni client using the GEMENI_API_KEY
+client = genai.Client(api_key=GEMENI_API_KEY)
+
+# Initialize Pinecone using the new Pinecone class
+pc = Pinecone(PINECONE_API_KEY)
+# Assume that the index "hotels-index" is already created and populated.
+index = pc.Index("hotels")
 
 def query_gemeni(content):
+    """
+    Query Gemeni with the provided content.
+    """
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=content,
     )
     return response.text
 
-def get_category_from_text(response, categories):
-    occurring_categories = [category for category in categories if category in response.text]
+def get_category_from_text(response_text, categories):
+    """
+    From Gemeni's response text, extract which of the given categories were mentioned.
+    """
+    occurring_categories = [category for category in categories if category in response_text]
     return occurring_categories
 
+def query_pinecone_hotels(user_prompt):
+    """
+    Embed the user prompt using Pinecone's inference API and query the hotel index.
+    Returns the top 100 matching hotels (with metadata) from namespace "ns1".
+    """
+    embedding_result = pc.inference.embed(
+        model="llama-text-embed-v2",
+        inputs=[user_prompt],
+        parameters={"input_type": "query"}
+    )
+    results = index.query(
+        namespace="hotels",
+        vector=embedding_result[0].values,
+        top_k=100,
+        include_values=False,
+        include_metadata=True
+    )
+    return results.get("matches", [])
+
+def hotels_to_df(hotels):
+    """
+    Convert the list of hotels (with metadata) to a Pandas DataFrame.
+    Each hotel's metadata is flattened into a row, with the hotel ID added as a column.
+    """
+    hotel_data = []
+    for hotel in hotels:
+        row = hotel.get("metadata", {}).copy()
+        row["id"] = hotel.get("id")
+        hotel_data.append(row)
+    return pd.DataFrame(hotel_data)
+
+def filter_hotels_by_location_df(df, user_prompt):
+    """
+    Filter the hotels DataFrame to only include rows where the city or county name appears
+    in the user prompt. If no rows match, return the original DataFrame.
+    """
+    prompt_lower = user_prompt.lower()
+    def location_match(row):
+        city = row.get("city_name", "").lower()
+        county = row.get("country_name", "").lower()
+        return (city in prompt_lower) or (county in prompt_lower)
+    
+    df["location_match"] = df.apply(location_match, axis=1)
+    df_filtered = df[df["location_match"]]
+    df_filtered.drop(columns=["location_match"], inplace=True)
+    return df_filtered if not df_filtered.empty else df
+
+def sort_hotels_df(df, ordering_categories):
+    """
+    Sort hotels by the first ordering category provided (or default to hotel_rating)
+    and then by hotel_rating as a secondary tiebreaker.
+    Returns the top 10 sorted hotels as a DataFrame.
+    """
+    primary_category = ordering_categories[0] if ordering_categories else "hotel_rating"
+    # Ensure the sorting columns exist and are numeric
+    for col in [primary_category, "hotel_rating"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+        else:
+            df[col] = 0
+    df_sorted = df.sort_values(by=[primary_category, "hotel_rating"], ascending=False)
+    return df_sorted.head(10)
 
 def get_hotel_recommendations(user_prompt):
-    # Get similar hotels to the request
-    # TODO: get this from the pinecone database
+    """
+    Process hotel recommendations as follows:
+      1. Query Pinecone for similar hotels based on the user prompt.
+      2. Convert the results to a Pandas DataFrame.
+      3. Filter hotels based on location (city/county) in the user prompt.
+      4. Use Gemeni to determine the most important hotel metadata category for sorting.
+      5. Sort the hotels using DataFrame operations and select the top 10.
+      6. Ask Gemeni to generate additional details and a compelling case for the top hotels.
+    """
+    # Step 1: Retrieve similar hotels from Pinecone.
+    hotels = query_pinecone_hotels(user_prompt)
     
-    # For now, we will just return the same hotel
+    # Step 2: Convert the hotels list into a DataFrame.
+    hotels_df = hotels_to_df(hotels)
+    print(hotels_df.head()) 
+    # Step 3: Filter hotels based on location (if applicable).
+    hotels_df = filter_hotels_by_location_df(hotels_df, user_prompt)
+    print(hotels_df.head())
     
-    hotels = "The Ritz-Carlton, Toronto"
-    
-    categories = [
-        "countyCode", 
-        "countyName", 
-        "cityCode", 
-        "cityName", 
-        "HotelCode", 
-        "HotelName", 
-        "HotelRating", 
-        "Address", 
-        "Attractions", 
-        "Description"
-    ]
-    
-    sorting_prompt = f"Here is the original prompt: \n {user_prompt} \n\n We now have some hotel recommendations. Which of these categories are most important to the user? Therefore by which category should we order by : {", ".join(categories)}. \n\n Please provide the category names and only that." 
+    # Step 4: Determine the ordering category using Gemeni.
+    categories = hotels_df.columns 
+    sorting_prompt = (
+        f"Here is the original prompt:\n{user_prompt}\n\n"
+        f"We now have some hotel recommendations. Which of these categories are most important to the user? "
+        f"Therefore, by which category should we order by: {', '.join(categories)}.\n\n"
+        "Please provide the category names and only that."
+    )
     sorting_response = query_gemeni(sorting_prompt)
-    occuring_categories = get_category_from_text(sorting_response, categories)
+    ordering_categories = get_category_from_text(sorting_response, categories)
     
-    # If no categories are found, we will sort for rating
-    if len(occuring_categories) == 0:
-        occuring_categories = ["HotelRating"]
-        
-    # TODO: Sort hotels by the categories (in pinecone or not)
+    # Default to sorting by hotel_rating if Gemeni returns no valid category.
+    if not ordering_categories:
+        ordering_categories = ["hotel_rating"]
     
+    # Step 5: Sort the hotels using the DataFrame.
+    top_hotels_df = sort_hotels_df(hotels_df, ordering_categories)
+    print(top_hotels_df.head())
     
-    # provide additional information about the hotel
-    additional_info = "Address, Attractions, Description"
-    additional_info_prompt = f"Here are the hotel recommendations: \n {hotels} \n\n Can you provide additional information about the hotels? For example, {additional_info}. And then make a compelling case for each of the hotels to the user."
+    # Prepare a list of hotel names for the final prompt.
+    hotel_strings = top_hotels_df.apply(lambda row: f"{row['id']}: {row.to_dict()}", axis=1).tolist()
+    
+    # Step 6: Ask Gemeni for additional details and a compelling case.
+    additional_info = "descriptions about nearby attractions, amenities, or services"
+    additional_info_prompt = (
+        f"Here are the top hotel recommendations:\n{', '.join(hotel_strings)}\n\n"
+        f"Can you provide additional information about these hotels? For example, {additional_info}. "
+        "Then, please make a compelling case for each hotel to the user. ignore columns which are marked unknown. "
+    )
     additional_info_response = query_gemeni(additional_info_prompt)
     
-    
     return additional_info_response
-    
+
+# Example usage:
+if __name__ == "__main__":
+    user_prompt = "I'm looking for luxury hotels in Albanien with excellent reviews and a great location."
+    recommendations = get_hotel_recommendations(user_prompt)
+    print("Hotel Recommendations:")
+    print(recommendations)
+
