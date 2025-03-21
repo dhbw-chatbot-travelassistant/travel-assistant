@@ -46,12 +46,12 @@ if __name__ == '__main__':
     PINECONE_NAMESPACE = "hotels"
 
     # Data processing
-    CHUNKSIZE = 96  # Specify the number of rows to read, embed and store at a time
+    CHUNKSIZE = 50  # Specify the number of rows to read, embed and store at a time
     NROWS = None  # Specify the number of rows to process, or 'None' to process all rows
     # Specify the number of rows to skip initially (excluding the header row)
-    SKIPROWS = 0
-    # Specify the number of hours to wait before running the data service again
-    SCHEDULE_HOURS = 1
+    SKIPROWS = 9167
+    # Specify the number of minutes to wait before running the data service again
+    SCHEDULE_MINUTES = 1
     ########################################################################################
 
     if not os.path.exists(DATASET_PATH):
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"An error occurred: {e}")
             print(
-                f"Schedule data service to run again in {SCHEDULE_HOURS} hours...")
-            time.sleep(SCHEDULE_HOURS * 3600)
+                f"Schedule data service to run again in {SCHEDULE_MINUTES} minutes...")
+            time.sleep(SCHEDULE_MINUTES * 60)
             # Skip the already processed rows (preserve the header row)
             skiprows = SKIPROWS + data_service.chunks_completed * CHUNKSIZE
