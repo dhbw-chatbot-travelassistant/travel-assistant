@@ -2,16 +2,13 @@ from abc import ABC, abstractmethod
 from pinecone import Pinecone, ServerlessSpec
 from typing import List
 from model import Hotel
+from google import genai
 
 
 class EmbeddingCreator(ABC):
     """
     Abstract class for embedding creators
     """
-
-    def __init__(self, index_name: str):
-        self.index_name = index_name
-
     @abstractmethod
     def create(self, data: dict) -> dict:
         """
@@ -31,23 +28,11 @@ class HotelPineconeEmbeddingCreator(EmbeddingCreator):
     Creates embeddings for hotels using Pinecone.
     """
 
-    def __init__(self, index_name: str, api_key: str):
-        super().__init__(index_name)
+    def __init__(self, api_key: str):
         self.api_key = api_key
 
     def create(self, data: List[Hotel]) -> dict:
         pc = Pinecone(api_key=self.api_key)
-
-        if not pc.has_index(self.index_name):
-            pc.create_index(
-                name=self.index_name,
-                dimension=1024,
-                metric="cosine",
-                spec=ServerlessSpec(
-                    cloud="aws",
-                    region="us-east-1"
-                )
-            )
 
         hotel_data = []
         for hotel in data:
@@ -64,6 +49,35 @@ class HotelPineconeEmbeddingCreator(EmbeddingCreator):
         for hotel, embedding in zip(data, embeddings):
             embeddings_dict[hotel.id] = {
                 "values": embedding["values"],
+                "metadata": hotel.to_dict()
+            }
+
+        return embeddings_dict
+
+
+class HotelGeminiEmbeddingCreator(EmbeddingCreator):
+    """
+    Creates embeddings for hotels using Gemeni.
+    """
+
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+
+    def create(self, data: List[Hotel]) -> dict:
+        client = genai.Client(api_key=self.api_key)
+        embeddings_dict = {}
+
+        hotel_data = []
+        for hotel in data:
+            hotel_data.append(str(hotel.to_dict()))
+        result = client.models.embed_content(
+            model="text-embedding-004",
+            contents=hotel_data
+        )
+
+        for hotel, embedding in zip(data, result.embeddings):
+            embeddings_dict[hotel.id] = {
+                "values": embedding.values,
                 "metadata": hotel.to_dict()
             }
 

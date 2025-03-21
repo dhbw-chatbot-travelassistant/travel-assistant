@@ -7,8 +7,9 @@ class EmbeddingStorage(ABC):
     Abstract class for embedding storage.
     """
 
-    def __init__(self, index_name: str, namespace: str):
+    def __init__(self, index_name: str,dimension: int, namespace: str):
         self.index_name = index_name
+        self.dimension = dimension
         self.namespace = namespace
 
     @abstractmethod
@@ -24,8 +25,8 @@ class PineconeEmbeddingStorage(EmbeddingStorage):
     Stores embeddings in Pinecone.
     """
 
-    def __init__(self, index_name: str, namespace: str, api_key: str):
-        super().__init__(index_name, namespace)
+    def __init__(self, index_name: str, dimension: int, namespace: str, api_key: str):
+        super().__init__(index_name, dimension, namespace)
         self.api_key = api_key
 
     def store(self, embeddings: dict):
@@ -33,7 +34,7 @@ class PineconeEmbeddingStorage(EmbeddingStorage):
         if not pc.has_index(self.index_name):
             pc.create_index(
                 name=self.index_name,
-                dimension=1024,
+                dimension=self.dimension,
                 metric="cosine",
                 spec=ServerlessSpec(
                     cloud="aws",
