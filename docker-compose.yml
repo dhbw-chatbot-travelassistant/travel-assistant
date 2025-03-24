@@ -1,10 +1,19 @@
 services:
-  frontend:
+  #frontend:
+    #build:
+    #  context: ./services/frontend
+    #container_name: frontend-service
+    #ports:
+    #  - "8081:8080"
+    #environment:
+    #  - XYZ=abc
+    #restart: unless-stopped
+
+  backend:
     build:
-      context: ./services/frontend
-    container_name: frontend-service
+      context: ./services/backend
+    container_name: backend-service
     ports:
-      - "8081:8080"
-    environment:
-      - XYZ=abc
-    restart: unless-stopped
+      - "8000:8000"
+    volumes:
+      - ./services/data:/data
