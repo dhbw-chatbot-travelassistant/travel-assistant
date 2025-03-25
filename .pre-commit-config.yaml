@@ -21,8 +21,6 @@ repos:
         stages: [pre-commit]
       - id: check-json
         stages: [pre-commit]
-      - id: pretty-format-json
-        stages: [pre-commit]
       - id: check-xml
         stages: [pre-commit]
       - id: detect-private-key

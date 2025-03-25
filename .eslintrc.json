@@ -1,0 +1,13 @@
+{
+  "extends": ["eslint:recommended", "google"],
+  "env": {
+    "node": true,
+    "es2020": true,
+    "jest": true
+  },
+  "rules": {
+    "comma-dangle": ["error", "never"],
+    "max-len": ["error", {"code": 120}],
+    "require-jsdoc": "off"
+  }
+}
