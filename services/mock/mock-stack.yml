@@ -1,0 +1,7 @@
+services:
+
+  travel-assistant-mock:
+    image: travel-assistant/mock
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
