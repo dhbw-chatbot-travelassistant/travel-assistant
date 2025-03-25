@@ -119,5 +119,5 @@ class HotelDataCollector(DataCollector):
 
     """
 
-    
+
 """
