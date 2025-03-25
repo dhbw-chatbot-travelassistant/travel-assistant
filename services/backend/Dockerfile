@@ -7,8 +7,6 @@ WORKDIR /app
 # Kopiere die requirements-Datei und installiere die Abhängigkeiten
 COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
-COPY data/requirements.txt ./data/requirements.txt
-RUN pip install --no-cache-dir -r data/requirements.txt
 
 # Kopiere den Rest des Anwendungscodes in den Container
 COPY backend/ ./backend/

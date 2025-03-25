@@ -1,2 +1,6 @@
 fastapi
 uvicorn
+pinecone==6.0.2
+google-genai==1.7.0
+python-dotenv==1.1.0
+pandas

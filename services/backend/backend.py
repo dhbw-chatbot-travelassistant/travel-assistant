@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import services.data.LLM_connection as llm_connection
+from services.data.LLM_connection import get_hotel_recommendations
+
+
 
 app = FastAPI()
 
@@ -10,9 +12,9 @@ class UserInput(BaseModel):
 @app.post("/api/hotel")
 async def get_hotels(input: UserInput):
 
-    hotels = llm_connection.get_hotel_recommendations(input.user_prompt)
+    hotels = get_hotel_recommendations(input.user_prompt)
 
-    return {"hotels":  "{hotels}"}
+    return {"hotels":  hotels}
 
 if __name__ == "__main__":
     import uvicorn
