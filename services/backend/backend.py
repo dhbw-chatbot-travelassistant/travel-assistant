@@ -1,9 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-
-#import sys
-#sys.path.insert(0, '/data')
-#from LLM_connection import get_hotel_recommendations
+import services.data.LLM_connection as llm_connection
 
 app = FastAPI()
 
@@ -13,7 +10,7 @@ class UserInput(BaseModel):
 @app.post("/api/hotel")
 async def get_hotels(input: UserInput):
 
-    #hotels = get_hotel_recommendations(input.user_prompt)
+    hotels = llm_connection.get_hotel_recommendations(input.user_prompt)
 
     return {"hotels":  "{hotels}"}
 
