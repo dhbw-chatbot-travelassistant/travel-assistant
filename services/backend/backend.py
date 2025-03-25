@@ -1,11 +1,21 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+#import sys
+#sys.path.insert(0, '/data')
+#from LLM_connection import get_hotel_recommendations
 
 app = FastAPI()
 
-# API-Route, die einen GET-Request erwartet
-@app.get("/api/user")
-async def user_input_eingeben():
-    return {"message": "Hallo Welt"}
+class UserInput(BaseModel):
+    user_prompt: str
+
+@app.post("/api/hotel")
+async def get_hotels(input: UserInput):
+
+    #hotels = get_hotel_recommendations(input.user_prompt)
+
+    return {"hotels":  "{hotels}"}
 
 if __name__ == "__main__":
     import uvicorn

@@ -9,11 +9,17 @@ services:
     #  - XYZ=abc
     #restart: unless-stopped
 
+
   backend:
     build:
-      context: ./services/backend
+      context: ./services
+      dockerfile: backend/Dockerfile
     container_name: backend-service
     ports:
       - "8000:8000"
     volumes:
-      - ./services/data:/data
+      - ./services/backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: [ "uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "8000" ]
+

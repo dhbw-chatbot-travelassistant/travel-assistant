@@ -1,15 +1,21 @@
 # Verwende ein leichtgewichtiges Python-Image als Basis
-FROM python:3.9-slim
+FROM python:3.13
 
 # Setze das Arbeitsverzeichnis im Container
 WORKDIR /app
 
 # Kopiere die requirements-Datei und installiere die Abhängigkeiten
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/requirements.txt ./backend/requirements.txt
+RUN pip install --no-cache-dir -r backend/requirements.txt
+COPY data/requirements.txt ./data/requirements.txt
+RUN pip install --no-cache-dir -r data/requirements.txt
 
 # Kopiere den Rest des Anwendungscodes in den Container
-COPY . .
+COPY backend/ ./backend/
+COPY data/ ./data/
+
+# Füge den Data-Ordner dem PYTHONPATH hinzu, damit Python die Module dort findet
+ENV PYTHONPATH="/app/services/data:${PYTHONPATH}"
 
 # Exponiere den Port, auf dem der Server läuft
 EXPOSE 8000
