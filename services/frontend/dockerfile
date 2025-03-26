@@ -1,0 +1,14 @@
+# Basis-Image mit Python
+FROM python:3.11
+
+# Setze das Arbeitsverzeichnis
+WORKDIR /app
+
+# Kopiere den Code ins Container-Image
+COPY . .
+
+# Installiere die Abhängigkeiten
+RUN pip install --no-cache-dir nicegui
+
+# Starte die NiceGUI-App
+CMD ["python", "main.py"]
