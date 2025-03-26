@@ -36,20 +36,20 @@ def chat_interface():
                 with chat_container:
                     ui.label(user_input).classes("chat-bubble bg-blue-500 text-white self-end")  # User message
                     thinking_label = ui.label("Thinking...").classes("chat-bubble bg-gray-700 text-white self-start")  # Placeholder for response
-                
+
                 input_box.set_value("")
                 update_chat_container_visibility()
                 ui.update()
 
                 # Send user input to backend
                 response = send_to_backend(user_input)
-                
+
                 # Update UI with backend response
                 if response:
                     thinking_label.set_text(response)  # Replace "Thinking..." with real response
                 else:
                     thinking_label.set_text("Sorry, I couldn't get a response.")  # Handle errors
-                
+
                 ui.update()
 
         def send_to_backend(user_prompt):
