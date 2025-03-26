@@ -1,0 +1,44 @@
+# Attraction 1
+Distances are displayed to the nearest 0.1 mile and kilometer. <br />
+<p>
+Ponte Fonnaia - 4 km / 2.5 mi <br />
+Catacomba di Villa San Faustino - 4.3 km / 2.7 mi <br />
+Church of San Felice - 5.4 km / 3.4 mi <br />
+Santa Maria della Pace Church - 5.7 km / 3.6 mi <br />
+Santuario dell Amore Misericordioso di Madre Speranza - 7.2 km / 4.5 mi <br />
+Carsulae Archaeological Park - 15.1 km / 9.4 mi <br />
+Cantina Peppucci - 15.6 km / 9.7 mi <br />
+Porta Marzia - 20.7 km / 12.9 mi <br />
+Porta Catena - 20.8 km / 12.9 mi <br />
+Porta Aurea - 20.9 km / 13 mi <br />
+Santa Maria della Consolazione - 21.4 km / 13.3 mi <br />
+Museo Civico - 21.6 km / 13.4 mi <br /> Scacciadiavoli - 21.8 km / 13.5 mi <br />
+Foresta Fossile di Dunarobba - 21.8 km / 13.5 mi <br />
+People s Palace (Palazzo del Popolo) - 22.5 km / 14 mi <br />
+</p>
+<p>The preferred airport for B&B Rossopeperoncino is Sant Egidio Airport (PEG) - 61.1 km / 38 mi </p>
+
+# Attraction 2
+Distances are displayed to the nearest 0.1 mile and kilometer. <br />
+<p>
+Lamington Road - 0.1 km / 0.1 mi <br />
+Bhatia Hospital - 0.9 km / 0.6 mi <br /> Royal Opera House - 1.2 km / 0.7 mi <br />
+Chor Bazaar - 1.5 km / 0.9 mi <br /> Mohammed Ali Road - 1.5 km / 0.9 mi <br /> Cumballa Hill Hospital - 1.6 km / 1 mi <br />
+Saifee Hospital - 1.6 km / 1 mi <br /> Girgaun Chowpatty - 1.7 km / 1.1 mi <br /> Shri Swaminarayan Temple - 1.8 km / 1.1 mi <br />
+Mahalaxmi Temple - 2.3 km / 1.4 mi <br />
+Kamala Nehru Park - 2.3 km / 1.4 mi <br />
+Prince Aly Khan Hospital - 2.4 km / 1.5 mi <br />
+Hanging Gardens - 2.4 km / 1.5 mi <br /> Mahalaxmi Racecourse - 2.4 km / 1.5 mi <br />
+Jaslok Hospital - 2.5 km / 1.5 mi <br />
+</p>
+<p>The preferred airport for Hotel Kumkum is Chhatrapati Shivaji International Airport (BOM) - 21.6 km / 13.4 mi </p>
+
+Distances are displayed to the nearest 0.1 mile and kilometer. <br />
+<p>Gandhi Chowk Market - 1.6 km / 1 mi <br />
+Khajji Naga Shrine - 2.6 km / 1.6 mi <br />
+Garam Sadak - 3.6 km / 2.3 mi <br />
+Panjpula - 4.2 km / 2.6 mi <br />
+Khajjinag Temple - 22 km / 13.7 mi <br />
+Chamera Dam - 22.2 km / 13.8 mi <br />
+Lakshmi Narayan Temples - 51.5 km / 32 mi <br />
+</p><p>The nearest major airport is Kangra (DHM-Gaggal) - 105.4 km / 65.5 mi</p>
