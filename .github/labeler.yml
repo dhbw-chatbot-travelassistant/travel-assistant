@@ -3,15 +3,15 @@
 
 'service:frontend':
   - changed-files:
-     - any-glob-to-any-file: ['services/frontend/*','services/frontend/**/*']
+     - any-glob-to-any-file: ['service/frontend/*','service/frontend/**/*']
 
 'service:backend':
   - changed-files:
-     - any-glob-to-any-file: ['services/backend/*','services/backend/**/*']
+     - any-glob-to-any-file: ['service/backend/*','service/backend/**/*']
 
 'service:data':
   - changed-files:
-     - any-glob-to-any-file: ['services/data/*','services/data/**/*']
+     - any-glob-to-any-file: ['service/data/*','service/data/**/*']
 
 docs:
 - changed-files:

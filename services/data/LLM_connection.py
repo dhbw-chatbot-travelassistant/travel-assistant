@@ -154,7 +154,7 @@ def get_hotel_recommendations(user_prompt):
         lambda row: f"{row['id']}: {row.to_dict()}", axis=1).tolist()
 
     # Step 6: Ask Gemini for additional details and a compelling case.
-    additional_info = "descriptions about nearby attractions, amenities, or services"
+    additional_info = "descriptions about nearby attractions, amenities, or service"
     additional_info_prompt = (
         f"Here are the top hotel recommendations:\n{', '.join(hotel_strings)}\n\n"
         f"Can you provide additional information about these hotels? For example, {additional_info}. "
