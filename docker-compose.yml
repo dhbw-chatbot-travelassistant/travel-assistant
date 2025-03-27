@@ -1,13 +1,13 @@
 services:
-  #frontend:
-   # build:
-    #  context: ./service/frontend
-    #container_name: frontend-service
-    #ports:
-    #  - "8081:8080"
-    #environment:
-     # - XYZ=abc
-    #restart: unless-stopped
+  frontend:
+    build:
+      context: ./service/frontend
+    container_name: frontend-service
+    ports:
+      - "8081:8080"
+    environment:
+      - XYZ=abc
+    restart: unless-stopped
 
 
   backend:
@@ -17,9 +17,6 @@ services:
     container_name: backend-service
     ports:
       - "8000:8000"
-    #volumes:
-      #- ./services/backend:/app
-     # - ./services/data:/app
     environment:
       - PYTHONUNBUFFERED=1
     command: [ "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000" ]
