@@ -1,61 +1,74 @@
 from nicegui import ui
-import httpx  # Import HTTP client for API calls
+import httpx
 
-MOCK_API_URL = "http://127.0.0.1:8080/mock/backend/getResponse"  # Mock backend route
+MOCK_API_URL = "http://127.0.0.1:8080/mock/backend/getResponse"
+theme = {'mode': 'dark'}
 
-widget_style = "bg-gray-800 text-white px-4 py-4 rounded-md"
-
-# Global styles for iOS-like design
 def apply_styles():
-    ui.query("body").style("background-color: #121212; color: white;")
-    ui.query(".chat-bubble").style("padding: 10px 15px; border-radius: 20px; max-width: 60%; display: inline-block;")
+    if theme['mode'] == 'dark':
+        ui.query("body").style("background-color: #1e1e1e; color: white; margin: 0; font-family: 'Segoe UI', sans-serif;")
+    else:
+        ui.query("body").style("background-color: #f4f4f4; color: black; margin: 0; font-family: 'Segoe UI', sans-serif;")
 
-# Chat UI
+def get_background_style():
+    if theme['mode'] == 'dark':
+        return (
+            "height: 75vh;"
+            "background-image: url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1950&q=80');"
+            "background-blend-mode: overlay;"
+            "background-color: rgba(0,0,0,0.6);"
+        )
+    else:
+        return (
+            "height: 75vh;"
+            "background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1950&q=80');"
+            "background-blend-mode: overlay;"
+            "background-color: rgba(255,255,255,0.6);"
+        )
+
 def chat_interface():
-    messages = []  # List to store chat messages
-    thinking_label = None  # To store the "thinking" message widget reference
+    messages = []
+    thinking_label = None
 
-    with ui.column().classes("w-full h-screen items-center justify-center relative space-y-4"):
-        # Title and subtitle
-        ui.label("Tracy").classes("text-2xl font-bold text-center")
-        ui.label("Your travel assistant").classes("text-sm text-gray-400 mb-4 text-center")
+    apply_styles()
 
-        # Chat container (initially hidden)
-        chat_container = ui.column().classes("w-full max-w-6xl p-4 space-y-2 overflow-auto flex-1 bg-gray-800 rounded-lg mt-4").style("display: none;")
+    with ui.column().classes("w-full h-screen items-center justify-between relative") as main_layout:
+        with ui.row().classes("justify-between items-center w-full px-6 mt-4 max-w-4xl"):
+            ui.label("✈️ Tracy – Your Travel Assistant").classes("text-2xl font-bold")
+            ui.button("🌓 Toggle Theme", on_click=lambda: switch_theme(chat_container)).classes("text-sm bg-gray-600 text-white px-3 py-1 rounded")
 
-        def update_chat_container_visibility():
-            """Show or hide the chat container based on the presence of messages."""
-            if messages:
-                chat_container.style("display: block;")
-            else:
-                chat_container.style("display: none;")
+        chat_container = ui.column().classes(
+            "w-full max-w-4xl px-4 py-4 space-y-2 overflow-auto flex-1 bg-cover bg-center rounded-xl mb-2"
+        ).style(get_background_style())
 
         async def send_message():
             user_input = input_box.value.strip()
-            if user_input:
-                messages.append(user_input)  # Add message to the list
-                with chat_container:
-                    ui.label(user_input).classes("chat-bubble bg-blue-500 text-white self-end")  # User message
-                    nonlocal thinking_label
-                    thinking_label = ui.label("Thinking...").classes("chat-bubble bg-gray-700 text-white self-start")  # Placeholder for response
+            if not user_input:
+                return
 
-                input_box.set_value("")  # Clear input box
-                update_chat_container_visibility()  # Show chat container after message is sent
-                ui.update()
+            input_box.set_value("")
 
-                # Send user input to mock backend
-                response = await send_to_backend(user_input)
+            with chat_container:
+                with ui.row().classes("justify-end w-full"):
+                    ui.label(user_input).classes(
+                        "bg-blue-500 text-white px-4 py-2 rounded-xl max-w-md self-end shadow-md")
 
-                # Update UI with mock backend response
-                if response:
-                    thinking_label.set_text(response)  # Replace "Thinking..." with real response
-                else:
-                    thinking_label.set_text("Sorry, I couldn't get a response.")  # Handle errors
+            ui.update()
+            ui.run_javascript("window.scrollTo(0, document.body.scrollHeight)")
 
-                ui.update()
+            nonlocal thinking_label
+            with chat_container:
+                with ui.row().classes("justify-start w-full"):
+                    thinking_label = ui.label("...").classes(
+                        "bg-gray-700 text-white px-4 py-2 rounded-xl max-w-md self-start shadow-md")
+
+            ui.update()
+
+            response = await send_to_backend(user_input)
+            thinking_label.set_text(response or "Sorry, no response.")
+            ui.run_javascript("window.scrollTo(0, document.body.scrollHeight)")
 
         async def send_to_backend(user_prompt):
-            """Send a GET request to the mock backend and return the response."""
             try:
                 async with httpx.AsyncClient() as client:
                     response = await client.get(MOCK_API_URL, params={"user_prompt": user_prompt}, timeout=10.0)
@@ -66,13 +79,34 @@ def chat_interface():
             except Exception as e:
                 return f"Error: {str(e)}"
 
-        # Input box and send button
-        with ui.row().classes("w-full max-w-6xl px-4 mx-auto bg-gray-700 text-white rounded-xl items-center px-3"):
-            input_box = ui.input(placeholder="Start typing...").classes(
-                "flex-grow bg-transparent border-none outline-none text-white"
-            )
-            ui.button("Send", on_click=send_message).classes("bg-blue-500 text-white px-4 py-2 rounded-lg ml-2")
+        with ui.row().classes(
+            "w-full max-w-4xl px-4 py-2 rounded-t-xl items-center fixed bottom-0"
+        ).style("background-color: #2c2c2c;" if theme['mode'] == 'dark' else "background-color: #ffffff;"):
 
-apply_styles()
+            input_style = (
+                "background-color: white; color: white; border: 1px solid #ccc; padding: 8px;"
+                if theme['mode'] == 'light'
+                else "background-color: #2c2c2c; color: white; border: none; padding: 8px;"
+            )
+
+            input_box = ui.input(placeholder="Type your message...") \
+                .props("rounded filled dense input-class=text-white") \
+                .classes("w-full") \
+                .style("background-color: rgba(255,255,255,0.1); border: 1px solid #ccc; padding: 8px;")
+
+
+            # ENTER senden
+            input_box.on("keydown.enter", lambda e: send_message())
+
+            ui.button("Send", on_click=send_message).classes("bg-blue-600 text-white rounded px-4 py-2 ml-2")
+
+    return chat_container
+
+def switch_theme(chat_container):
+    theme['mode'] = 'light' if theme['mode'] == 'dark' else 'dark'
+    apply_styles()
+    chat_container.style(get_background_style())
+    ui.update()
+
 chat_interface()
 ui.run(port=8082)
