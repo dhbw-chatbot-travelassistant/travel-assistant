@@ -76,7 +76,7 @@ class HotelDataCollector(DataCollector):
     def __init__(self, file_path: str, chunksize: int = 1000, nrows: int = None, skiprows: int = 0):
         super().__init__(file_path, chunksize)
         self.csv_data_collector = CSVDataCollector(
-            file_path,  chunksize, nrows, range(2, 2 + skiprows), "Windows-1252", ",")
+            file_path,  chunksize, nrows, range(1, 1 + skiprows), "Windows-1252", ",")
         self.skiprows = skiprows
 
     def collect(self) -> Generator[int, List[Hotel], None]:
