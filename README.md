@@ -98,3 +98,13 @@ Run frontend and mock-backend:
 ```bash
 docker-compose -f mock-stack.yml up
 ```
+
+Build and run frontend and backend:
+```bash
+docker-compose -f docker-compose.yml up --build
+```
+
+Build and run frontend and mock-backend:
+```bash
+docker-compose -f mock-stack.yml up --build
+```

@@ -29,6 +29,3 @@ venv
 
 # Node
 node_modules/
-
-# Docker environment
-.env
