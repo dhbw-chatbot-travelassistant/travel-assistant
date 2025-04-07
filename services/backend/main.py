@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from data.LLM_connection import get_hotel_recommendations
+from LLM_connection import get_hotel_recommendations
 
 app = FastAPI()
 

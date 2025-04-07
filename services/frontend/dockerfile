@@ -7,6 +7,9 @@ WORKDIR /app
 # Kopiere den Code ins Container-Image
 COPY . .
 
+# Kopiere GEMINI_API_KEY Umgebungsvariable
+ARG GEMINI_API_KEY
+
 # Installiere die Abhängigkeiten
 RUN pip install --no-cache-dir nicegui
 

@@ -3,7 +3,6 @@ FROM python:3.13
 WORKDIR /app
 
 # Kopiere die benötigten Ordner in den "service"-Ordner
-COPY services/data data/
 COPY services/backend/ backend/
 
 RUN pip install --no-cache-dir -r backend/requirements.txt

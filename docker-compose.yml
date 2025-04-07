@@ -1,10 +1,10 @@
 services:
   frontend:
     build:
-      context: ./service/frontend
+      context: ./services/frontend/
     container_name: frontend-service
     ports:
-      - "8081:8080"
+      - "8080:8082"
     environment:
       - XYZ=abc
     restart: unless-stopped
@@ -12,11 +12,12 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: services/backend/Dockerfile
+      context: .services/backend
     container_name: backend-service
     ports:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PINECONE_API_KEY=${PINECONE_API_KEY}
     command: [ "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000" ]
