@@ -12,4 +12,3 @@ RUN pip install --no-cache-dir -r backend/requirements.txt
 ENV PYTHONPATH="/app/data:${PYTHONPATH}"
 
 EXPOSE 8000
-
