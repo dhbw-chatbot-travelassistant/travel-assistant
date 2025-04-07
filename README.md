@@ -78,7 +78,7 @@ For easy use, please add a Dockerfile to your service and add it to the `docker-
 ```yaml
   frontend:
     build:
-      context: ./services/frontend
+      context: ./service/frontend
     container_name: frontend-service
     ports:
       - "8081:8080"

@@ -6,7 +6,7 @@ class TestHotelDataCollector(unittest.TestCase):
 
     def test_data_of_each_hotel_is_not_empty(self):
         data_collector = HotelDataCollector(
-            "services/data/datasets/hotels.csv", 2, 10)
+            "service/data/datasets/hotels.csv", 2, 10)
 
         for _, data in data_collector.collect():
             for hotel in data:
@@ -26,7 +26,7 @@ class TestHotelDataCollector(unittest.TestCase):
 
     def test_to_dict_returns_dict(self):
         data_collector = HotelDataCollector(
-            "services/data/datasets/hotels.csv", 1, 100)
+            "service/data/datasets/hotels.csv", 1, 100)
 
         for _, data in data_collector.collect():
             for hotel in data:
