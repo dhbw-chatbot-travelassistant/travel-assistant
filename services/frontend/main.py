@@ -83,7 +83,6 @@ def chat_interface(backend_url: str):
                         return f"Error: HTTP {response.status_code} - {response.text}"
             except Exception as e:
                 return f"Error: {repr(e)}"
-                #return f"Exception: {e.with_traceback()}"
 
         with ui.row().classes(
             "w-full max-w-4xl px-4 py-2 rounded-t-xl items-center fixed bottom-0"
