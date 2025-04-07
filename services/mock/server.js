@@ -7,7 +7,7 @@ app.use(express.json());
 
 console.logCopy = console.log.bind(console);
 
-app.get("/mock/backend/getResponse", (req, res) => {
+app.post("/mock/backend/getResponse", (req, res) => {
     console.log(req);
 
     // delay response by 0-5 seconds

@@ -1,14 +1,16 @@
 from nicegui import ui
 import httpx
 
-MOCK_API_URL = "http://travel-assistant-mock:8080/mock/backend/getResponse"
 theme = {'mode': 'dark'}
 
 def apply_styles():
     if theme['mode'] == 'dark':
-        ui.query("body").style("background-color: #1e1e1e; color: white; margin: 0; font-family: 'Segoe UI', sans-serif;")
+        ui.query("body").style(
+            "background-color: #1e1e1e; color: white; margin: 0; font-family: 'Segoe UI', sans-serif;")
     else:
-        ui.query("body").style("background-color: #f4f4f4; color: black; margin: 0; font-family: 'Segoe UI', sans-serif;")
+        ui.query("body").style(
+            "background-color: #f4f4f4; color: black; margin: 0; font-family: 'Segoe UI', sans-serif;")
+
 
 def get_background_style():
     if theme['mode'] == 'dark':
@@ -26,7 +28,8 @@ def get_background_style():
             "background-color: rgba(255,255,255,0.6);"
         )
 
-def chat_interface():
+
+def chat_interface(backend_url: str):
     messages = []
     thinking_label = None
 
@@ -34,8 +37,10 @@ def chat_interface():
 
     with ui.column().classes("w-full h-screen items-center justify-between relative") as main_layout:
         with ui.row().classes("justify-between items-center w-full px-6 mt-4 max-w-4xl"):
-            ui.label("✈️ Tracy – Your Travel Assistant").classes("text-2xl font-bold")
-            ui.button("🌓 Toggle Theme", on_click=lambda: switch_theme(chat_container)).classes("text-sm bg-gray-600 text-white px-3 py-1 rounded")
+            ui.label("✈️ Tracy – Your Travel Assistant").classes(
+                "text-2xl font-bold")
+            ui.button("🌓 Toggle Theme", on_click=lambda: switch_theme(
+                chat_container)).classes("text-sm bg-gray-600 text-white px-3 py-1 rounded")
 
         chat_container = ui.column().classes(
             "w-full max-w-4xl px-4 py-4 space-y-2 overflow-auto flex-1 bg-cover bg-center rounded-xl mb-2"
@@ -71,13 +76,14 @@ def chat_interface():
         async def send_to_backend(user_prompt):
             try:
                 async with httpx.AsyncClient() as client:
-                    response = await client.get(MOCK_API_URL, params={"user_prompt": user_prompt}, timeout=10.0)
+                    response = await client.post(backend_url, json={"user_prompt": user_prompt}, timeout=(10, 30))
                     if response.status_code == 200:
                         return response.json().get("answer", "No response from backend.")
                     else:
-                        return f"Error: {response.status_code}"
+                        return f"Error: HTTP {response.status_code} - {response.text}"
             except Exception as e:
-                return f"Error: {str(e)}"
+                return f"Error: {repr(e)}"
+                #return f"Exception: {e.with_traceback()}"
 
         with ui.row().classes(
             "w-full max-w-4xl px-4 py-2 rounded-t-xl items-center fixed bottom-0"
@@ -94,13 +100,14 @@ def chat_interface():
                 .classes("w-full") \
                 .style("background-color: rgba(255,255,255,0.1); border: 1px solid #ccc; padding: 8px;")
 
-
             # ENTER senden
             input_box.on("keydown.enter", lambda e: send_message())
 
-            ui.button("Send", on_click=send_message).classes("bg-blue-600 text-white rounded px-4 py-2 ml-2")
+            ui.button("Send", on_click=send_message).classes(
+                "bg-blue-600 text-white rounded px-4 py-2 ml-2")
 
     return chat_container
+
 
 def switch_theme(chat_container):
     theme['mode'] = 'light' if theme['mode'] == 'dark' else 'dark'
@@ -108,5 +115,16 @@ def switch_theme(chat_container):
     chat_container.style(get_background_style())
     ui.update()
 
-chat_interface()
-ui.run(port=8082)
+# Main entry point
+
+if __name__ in {"__main__", "__mp_main__"}:
+    
+    # get first argument from command line
+    import sys
+    if len(sys.argv) > 1:
+        backend_url = sys.argv[1]
+        chat_interface(backend_url)
+        ui.run(port=8082)
+    else:
+        # raise an error if no argument is provided
+        raise ValueError("Please provide the backend URL as an argument.")
