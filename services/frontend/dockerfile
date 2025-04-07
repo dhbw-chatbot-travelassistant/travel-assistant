@@ -11,4 +11,4 @@ COPY . .
 RUN pip install --no-cache-dir nicegui
 
 # Starte die NiceGUI-App
-CMD ["python", "main.py"]
+CMD python main.py "$BACKEND_URL"

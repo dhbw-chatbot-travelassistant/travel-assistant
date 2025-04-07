@@ -1,0 +1,21 @@
+services:
+
+  frontend:
+    depends_on:
+      - mock
+    build:
+      context: ./services/frontend/
+    container_name: frontend-service
+    ports:
+      - "8080:8082"
+    restart: unless-stopped
+    environment:
+      - BACKEND_URL=${MOCK_BACKEND_URL}
+
+  mock:
+    build:
+      context: ./services/mock/
+    container_name: backend-mock-service
+    ports:
+      - "8081:8080"
+    restart: unless-stopped

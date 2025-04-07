@@ -74,7 +74,7 @@ All changes to **main** must be requested and documented through a PR and approv
 
 For easy use, please add a Dockerfile to your service and add it to the `docker-compose.yml`.
 
-*Example:*
+Example:
 ```yaml
   frontend:
     build:
@@ -89,7 +89,22 @@ For easy use, please add a Dockerfile to your service and add it to the `docker-
 
 #### Usage
 
-*Run:*
+Run frontend and backend:
 ```bash
 docker-compose -f docker-compose.yml up
+```
+
+Run frontend and mock-backend:
+```bash
+docker-compose -f mock-stack.yml up
+```
+
+Build and run frontend and backend:
+```bash
+docker-compose -f docker-compose.yml up --build
+```
+
+Build and run frontend and mock-backend:
+```bash
+docker-compose -f mock-stack.yml up --build
 ```

@@ -87,7 +87,7 @@ def filter_hotels_by_location_df(df, user_prompt):
         return (city in prompt_lower) or (county in prompt_lower)
 
     df["location_match"] = df.apply(location_match, axis=1)
-    df_filtered = df[df["location_match"]]
+    df_filtered = df.loc[df["location_match"]]
     df_filtered.drop(columns=["location_match"], inplace=True)
     return df_filtered if not df_filtered.empty else df
 
@@ -125,10 +125,8 @@ def get_hotel_recommendations(user_prompt):
 
     # Step 2: Convert the hotels list into a DataFrame.
     hotels_df = hotels_to_df(hotels)
-    print(hotels_df.head())
     # Step 3: Filter hotels based on location (if applicable).
     hotels_df = filter_hotels_by_location_df(hotels_df, user_prompt)
-    print(hotels_df.head())
 
     # Step 4: Determine the ordering category using Gemini.
     categories = hotels_df.columns
@@ -147,7 +145,6 @@ def get_hotel_recommendations(user_prompt):
 
     # Step 5: Sort the hotels using the DataFrame.
     top_hotels_df = sort_hotels_df(hotels_df, ordering_categories)
-    print(top_hotels_df.head())
 
     # Prepare a list of hotel names for the final prompt.
     hotel_strings = top_hotels_df.apply(
