@@ -1,0 +1,21 @@
+services:
+
+  frontend:
+    depends_on:
+      - travel-assistant-mock
+    build:
+      context: ./services/frontend/
+    container_name: frontend-service
+    ports:
+      - "8080:8082"
+    environment:
+      - XYZ=abc
+    restart: unless-stopped
+
+  travel-assistant-mock:
+    build:
+      context: ./services/mock/
+    container_name: backend-mock-service
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
