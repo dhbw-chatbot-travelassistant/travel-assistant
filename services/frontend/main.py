@@ -117,7 +117,7 @@ def switch_theme(chat_container):
 # Main entry point
 
 if __name__ in {"__main__", "__mp_main__"}:
-    
+
     # get first argument from command line
     import sys
     if len(sys.argv) > 1:
