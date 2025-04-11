@@ -4,12 +4,20 @@ from pinecone import Pinecone
 from dotenv import load_dotenv
 import pandas as pd
 
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
 # Load environment variables from .env file
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
 # Retrieve API keys from environment
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
+
+print(f"{os.path.join(os.path.dirname(__file__), '.env')}")
+print(f"GEMINI_API_KEY: {GEMINI_API_KEY}")
+print(f"PINECONE_API_KEY: {PINECONE_API_KEY}")
 
 # Initialize the Gemini client using the GEMINI_API_KEY
 client = genai.Client(api_key=GEMINI_API_KEY)
@@ -54,9 +62,18 @@ def query_pinecone_hotels(user_prompt):
         namespace="hotels",
         vector=embedding_result.embeddings[0].values,
         top_k=100,
-        include_values=False,
+        include_values=True,
         include_metadata=True
     )
+
+    # Assuming 'embedding_result' is from your Gemini client, and your pinecone query returns matches
+    # The prompt's embedding
+    prompt_vector = embedding_result.embeddings[0].values
+    # Your Pinecone query results with embeddings
+    pinecone_matches = results.get("matches", [])
+
+    # Plot the PCA visualization
+    plot_prompt_embedding_with_cities(prompt_vector, pinecone_matches)
 
     return results.get("matches", [])
 
@@ -160,6 +177,78 @@ def get_hotel_recommendations(user_prompt):
     additional_info_response = query_gemini(additional_info_prompt)
 
     return additional_info_response
+
+
+def plot_prompt_embedding_with_cities(prompt_vector, pinecone_matches, prompt_label=""):
+    """
+    Plot the user prompt embedding along with the embeddings of its nearest neighbors
+    in 2D using PCA. Annotate every point (including the user prompt) with a label.
+    For neighbor points, if a "city_name" exists in the match's metadata, it is used as the label;
+    otherwise, the label defaults to its neighbor number. For the user prompt point, the 'prompt_label'
+    is used.
+
+    Parameters:
+      - prompt_vector: list or numpy array of shape (512,) containing the prompt embedding.
+      - pinecone_matches: list of dicts representing the Pinecone query matches. Each dict should contain:
+            - "values": the embedding vector.
+            - "metadata": a dict that may include a "city_name" key.
+      - prompt_label (optional): a label for the user prompt point. This could be a city name if available,
+            or simply a custom label (default is "User Prompt").
+    """
+    vectors = []
+    labels = []
+
+    # Append the prompt vector.
+    vectors.append(prompt_vector)
+    labels.append(prompt_label)
+
+    # Append all neighbor vectors.
+    for i, match in enumerate(pinecone_matches):
+        vec = match.get("values")
+        if vec is not None:
+            vectors.append(vec)
+            # Try to extract the city name from metadata; if not available, use neighbor number.
+            city = match.get("metadata", {}).get("city_name")
+            label = city if city else f"Neighbor {i + 1}"
+            labels.append(label)
+
+    # Convert list to a numpy array.
+    vectors = np.array(vectors)
+
+    # Reduce dimensions to 2D using PCA.
+    pca = PCA(n_components=2)
+    vectors_2d = pca.fit_transform(vectors)
+
+    # Create the plot.
+    plt.figure(figsize=(8, 6))
+
+    # Plot each point and annotate with the corresponding label.
+    for i, (x, y) in enumerate(vectors_2d):
+        # Use a special marker for the user prompt point.
+        if i == 0:
+            plt.scatter(x, y, marker="X", color="red", s=100)
+        else:
+            plt.scatter(x, y, marker="o", color="blue", s=50)
+        plt.text(x + 0.01, y + 0.01, labels[i], fontsize=9)
+
+    plt.title(
+        "2D PCA Projection: User Prompt and Nearest Neighbors (Annotated with City Names)")
+    plt.xlabel("Principal Component 1")
+    plt.ylabel("Principal Component 2")
+    plt.show()
+
+# Example usage:
+# Assuming 'prompt_vector' is the 512-dimensional vector for your user prompt,
+# and 'pinecone_matches' is the list returned from your Pinecone query where each match includes a "values"
+# field for the embedding and "metadata" with a "city_name".
+#
+# For instance:
+# prompt_vector = embedding_result.embeddings[0].values
+# pinecone_matches = query_pinecone_hotels(user_prompt)
+# Optionally, if you have a city name associated with the prompt, you can pass it as follows:
+# plot_prompt_embedding_with_cities(prompt_vector, pinecone_matches, prompt_label="Albania")
+#
+# Otherwise, it will simply display "User Prompt" for the first point.
 
 
 # Example usage:
