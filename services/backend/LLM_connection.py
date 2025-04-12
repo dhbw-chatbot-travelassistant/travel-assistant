@@ -76,47 +76,52 @@ def hotels_to_df(hotels):
 
 def filter_hotels_by_location_df(df, user_prompt):
     """
-    Use Gemini to extract the city or country from the prompt and filter the hotels DataFrame to only include rows
-    where the corresponding location appears. Also adds a 'matched_location' column with the actual value from the DataFrame.
+    Nutzt Gemini, um aus dem Prompt die Stadt bzw. das Land zu extrahieren und filtert den Hotels-DataFrame so,
+    dass nur Zeilen enthalten sind, bei denen einer der extrahierten Orte vorkommt. Es wird auch eine Spalte
+    'matched_location' hinzugefügt, die alle passenden Elemente als kommaseparierten String enthält.
     """
-    # Build a list of unique location names from the DataFrame.
-    unique_cities = df['city_name'].dropna().unique().tolist()
-    unique_countries = df['country_name'].dropna().unique().tolist()
+    # Liste der eindeutigen Ortsnamen aus dem DataFrame bilden.
+    unique_cities = df['city_name'].dropna().unique().tolist() if 'city_name' in df.columns else []
+    unique_countries = df['country_name'].dropna().unique().tolist() if 'country_name' in df.columns else []
     unique_location_names = list(set(unique_cities + unique_countries))
 
-    # Formulate the prompt for Gemini using the unique location names.
+
+    # Gemini-Prompt formulieren, der alle relevanten Ortsnamen prüfen soll.
     extraction_prompt = (
         f"Given the following list of unique location names from our dataset: {unique_location_names}, "
         f"extract from the following prompt which of these locations are mentioned: \"{user_prompt}\". "
-        "Return the one location name from the list which is asked for in the language from the given list!"
+        "Return the one location name from the list which is asked for in the language from the given list for example if the list says albanien instead of albania, return albanien!   "
     )
     extraction_response = query_gemini(extraction_prompt)
-    extraction_response = extraction_response.replace(
-        "\n", " ").replace("\t", " ").strip()
+    extraction_response = extraction_response.replace("\n", "").replace("\t", "").strip()
 
-    # If Gemini returns a non-empty response, use that location; otherwise, the list is empty.
-    locations = [extraction_response] if extraction_response else []
+
+    # Falls Gemini mehrere Elemente zurückliefert, diese zu einer Liste aufsplitten.
+    locations = [loc.strip() for loc in extraction_response.split(",")] if extraction_response else []
+
 
     def location_match(row):
-        # Get the city and country for this row and normalize them.
+        matches = []
+        # Extrahiere und normalisiere den city_name und country_name der Zeile.
         city = str(row.get("city_name", "")).lower().strip()
         country = str(row.get("country_name", "")).lower().strip()
         for loc in locations:
             loc_norm = loc.lower().strip()
-            # Check for an exact match first.
-            if loc_norm == city or loc_norm == country:
-                return loc
-            # Optionally, check if the extracted location is contained in the row value.
-            if loc_norm in city or loc_norm in country:
-                return loc
-        return None
+            # Prüfe auf exakte Übereinstimmung oder Teilübereinstimmung.
+            if loc_norm == city or loc_norm == country or loc_norm in city or loc_norm in country:
+                matches.append(loc)
+        if matches:
+            # Doppelte Einträge entfernen und als kommaseparierten String zurückgeben.
+            unique_matches = list(dict.fromkeys(matches))
+            return ", ".join(unique_matches)
+        else:
+            return None
 
-    # Apply matching to create a new column with the matched location (if any)
     df["matched_location"] = df.apply(location_match, axis=1)
-    # Filter rows where a match was found. If no rows remain, return the original DataFrame.
+
     df_filtered = df[df["matched_location"].notnull()]
-    print(f"{df_filtered}")
-    return df_filtered if not df_filtered.empty else df
+
+    return df_filtered
 
 
 def sort_hotels_df(df, ordering_categories):
