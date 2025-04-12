@@ -139,7 +139,7 @@ def filter_hotels_by_location_df(df, user_prompt):
     extraction_prompt = (
         f"Given the following list of unique location names from our dataset: {unique_location_names}, "
         f"extract from the following prompt which of these locations are mentioned: \"{user_prompt}\". "
-        "Return the one location name from the list which is asked for in the language from the given list for example if the list says albanien instead of albania, return albanien! If two instances of the same country or city in different languages are there, return both with comma as separator. "
+        "Return the one location name from the list which is asked for in the language from the given list for example if the list says albanien instead of albania, return albanien!   "
     )
     extraction_response = query_gemini(extraction_prompt)
     extraction_response = extraction_response.replace("\n", "").replace("\t", "").strip()
@@ -173,6 +173,35 @@ def filter_hotels_by_location_df(df, user_prompt):
         print(f"Unique countrynames: {df_filtered['country_name'].unique()}")
     print(df_filtered)
     return df_filtered
+
+def sort_hotels_df(df, ordering_categories):
+    """
+    Sortiert den Hotels-DataFrame basierend auf einer primären Sortierungskategorie 
+    (aus ordering_categories; falls leer, wird "hotel_rating" verwendet) und zusätzlich 
+    nach "hotel_rating", um als sekundäres Kriterium zu dienen. Es werden die Top 10 Zeilen zurückgegeben.
+
+    Parameter:
+      - df (pd.DataFrame): Der DataFrame mit den Hotels-Daten.
+      - ordering_categories (list): Liste der Prioritätskategorien; das erste Element wird als primäre Kategorie genutzt.
+
+    Returns:
+      - pd.DataFrame: Der nach den angegebenen Kriterien sortierte DataFrame (Top 10).
+    """
+    # Bestimme die primäre Kategorie; Standard ist "hotel_rating"
+    primary_category = ordering_categories[0] if ordering_categories else "hotel_rating"
+
+    # Stelle sicher, dass die Spalten numerisch vorliegen, damit eine Sortierung möglich ist.
+    for col in [primary_category, "hotel_rating"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+        else:
+            # Falls die Spalte nicht existiert, wird sie auf 0 gesetzt.
+            df[col] = 0
+
+    # Sortiere zuerst nach der primären Kategorie, dann nach "hotel_rating" (beides absteigend)
+    df_sorted = df.sort_values(by=[primary_category, "hotel_rating"], ascending=False).head(10)
+    return df_sorted
+
 
 
 def process_and_visualize(user_prompt):
