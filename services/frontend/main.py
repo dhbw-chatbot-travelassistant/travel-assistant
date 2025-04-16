@@ -64,13 +64,13 @@ def chat_interface(backend_url: str):
             nonlocal thinking_label
             with chat_container:
                 with ui.row().classes("justify-start w-full"):
-                    thinking_label = ui.label("...").classes(
+                    thinking_label = ui.markdown("...").classes(
                         "bg-gray-700 text-white px-4 py-2 rounded-xl max-w-md self-start shadow-md")
 
             ui.update()
 
             response = await send_to_backend(user_input)
-            thinking_label.set_text(response or "Sorry, no response.")
+            thinking_label.set_content(response or "Sorry, no response.")
             ui.run_javascript("window.scrollTo(0, document.body.scrollHeight)")
 
         async def send_to_backend(user_prompt):
