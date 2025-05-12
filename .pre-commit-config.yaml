@@ -27,7 +27,7 @@ repos:
       - id: no-commit-to-branch
         stages: [pre-commit]
 -   repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v4.0.0
+    rev: v4.2.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
